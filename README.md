@@ -1,5 +1,9 @@
 # cault
 
+Consul and Vault are started together in two separate, but linked, docker containers.
+
+Vault is configured to use the `consul` [secret backend](https://www.vaultproject.io/docs/secrets/consul/).
+
 - [Start Consul and Vault](#start-consul-and-vault)
 - [Getting Vault Ready](#getting-vault-ready)
   - [Init Vault](#init-vault)
@@ -10,10 +14,6 @@
   - [Writing / Reading Secrets](#writing--reading-secrets)
   - [Response Wrapping](#response-wrapping)
 - [License](#license)
-
-Consul and Vault are started together in two separate, but linked, docker containers.
-
-Vault is configured to use the `consul` [secret backend](https://www.vaultproject.io/docs/secrets/consul/).
 
 ## Start Consul and Vault
 
