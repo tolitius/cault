@@ -174,11 +174,11 @@ And it is in fact in Consul:
 
 ### Response Wrapping
 
+Running with a [Cubbyhole Secret Backend](https://www.vaultproject.io/docs/secrets/cubbyhole/index.html).
+
 > _NOTE: for this example to work you would need [jq](https://stedolan.github.io/jq/) (i.e. to parse JSON responses from Vault)._
 
 > _`brew install jq` or `apt-get install jq` or similar_
-
-Running with a [Cubbyhole Secret Backend](https://www.vaultproject.io/docs/secrets/cubbyhole/index.html):
 
 Export Vault env vars for the local scripts to work:
 
@@ -187,7 +187,7 @@ $ export VAULT_ADDR=http://127.0.0.1:8200
 $ export VAULT_TOKEN=5a4a7e11-1e2f-6f76-170e-b8ec58cd2da5
 ```
 
-Create a cubbyhole with for the `billion-dollars` secret, and wrap it in a one time use token:
+Create a cubbyhole for the `billion-dollars` secret, and wrap it in a one time use token:
 
 ```bash
 $ token=`./tools/vault/wrap-token.sh /secret/billion-dollars`
@@ -206,28 +206,35 @@ Let's use it:
 
 ```bash
 $ curl -s -H "X-Vault-Token: $token" -X GET $VAULT_ADDR/v1/cubbyhole/response
-
-{"lease_id":"",
- "renewable":false,
- "lease_duration":0,
- "data":{"response":"
-         {\"lease_id\":\"\",
-          \"renewable\":false,
-          \"lease_duration\":2592000,
-          \"data\":
-           {\"value\":\"behind-super-secret-password\"},
-            \"wrap_info\":null,
-            \"warnings\":null,
-            \"auth\":null}"},
- "wrap_info":null,
- "warnings":null,
- "auth":null}
+```
+```json
+{"lease_id": "",
+ "renewable": false,
+ "lease_duration": 0,
+ "data": {
+   "response": {
+     "lease_id": "",
+     "renewable": false,
+     "lease_duration": 2592000,
+     "data": {
+       "value": "behind-super-secret-password"
+     },
+     "wrap_info": null,
+     "warnings": null,
+     "auth": null
+   }
+ },
+ "wrap_info": null,
+ "warnings": null,
+ "auth": null}
 ```
 
 Let's try to use it again:
 
 ```bash
 $ curl -s -H "X-Vault-Token: $token" -X GET $VAULT_ADDR/v1/cubbyhole/response
+```
+```json
 {"errors":["permission denied"]}
 ```
 
