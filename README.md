@@ -1,6 +1,6 @@
 # cault
 
-Consul and Vault will started together in two separate, but linked, docker containers.
+Consul and Vault are started together in two separate, but linked, docker containers.
 
 Vault is configured to use the `consul` [secret backend](https://www.vaultproject.io/docs/secrets/consul/).
 
@@ -115,6 +115,8 @@ alias vault='docker exec -it cault_vault_1 vault "$@"'
 ```
 
 This will allow to run `vault` commands without a need to logging in to the image.
+
+> the reason commands will work is because you just `auth`'ed (logged into Vault) with a root token inside the image in the previous step.
 
 ### Watch Consul logs
 
