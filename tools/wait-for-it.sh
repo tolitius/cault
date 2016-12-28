@@ -1,5 +1,14 @@
 #!/bin/sh
-#   Use this script to test if a given TCP host/port are available
+
+### adopted from https://github.com/ucalgary/wait-for-it
+### so it works for the alpine image the official Vault image derives from
+
+##########################################################
+#                                                        #
+#    waits until a given TCP host:port is available      #
+#    when available runs a provided command with args    #
+#                                                        #
+##########################################################
 
 cmdname=$(basename $0)
 
