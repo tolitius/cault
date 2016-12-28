@@ -114,17 +114,19 @@ From the host environment (i.e. outside of the docker image):
 alias vault='docker exec -it cault_vault_1 vault "$@"'
 ```
 
-This will allow to tun `vault` commands without a need to logging in to the image.
+This will allow to run `vault` commands without a need to logging in to the image.
 
 ### Watch Consul logs
 
-In a separate terminal tail Consul logs:
+In one terminal tail Consul logs:
 
 ```bash
 $ docker logs cault_consul_1 -f
 ```
 
 ### Writing / Reading Secrets
+
+In the other terminal run vault commands:
 
 ```bash
 $ vault write -address=http://127.0.0.1:8200 secret/billion-dollars value=behind-super-secret-password
