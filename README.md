@@ -15,6 +15,8 @@ Vault is configured to use a `consul` [secret backend](https://www.vaultproject.
   - [Watch Consul logs](#watch-consul-logs)
   - [Writing / Reading Secrets](#writing--reading-secrets)
   - [Response Wrapping](#response-wrapping)
+- [Troubleshooting](#troubleshooting)
+  - [Bad Image Caches](bad-image-caches)
 - [License](#license)
 
 ## Start Consul and Vault
@@ -239,6 +241,26 @@ $ curl -s -H "X-Vault-Token: $token" -X GET $VAULT_ADDR/v1/cubbyhole/response
 ```
 
 Vault takes `one time` pretty seriously.
+
+## Troubleshooting
+
+### Bad Image Caches
+
+In case there are some stale / stopped cached images, you might get connection exceptions:
+
+```clojure
+failed to check for initialization: Get v1/kv/vault/core/keyring: dial tcp i/o timeout
+```
+
+```clojure
+reconcile unable to talk with Consul backend: error=service registration failed: /v1/agent/service/register
+```
+
+you can purge stopped images to solve that:
+
+```bash
+docker rm $(docker ps -a -q)
+```
 
 ## License
 
