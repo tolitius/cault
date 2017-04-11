@@ -117,7 +117,7 @@ token_duration: 0
 token_policies: [root]
 ```
 
---
+---
 
 All done: now you have both Consul and Vault running side by side.
 
@@ -264,6 +264,6 @@ docker rm $(docker ps -a -q)
 
 ## License
 
-Copyright © 2016 tolitius
+Copyright © 2017 tolitius
 
 Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
