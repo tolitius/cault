@@ -15,6 +15,8 @@ Vault is configured to use a `consul` [secret backend](https://www.vaultproject.
   - [Watch Consul logs](#watch-consul-logs)
   - [Writing / Reading Secrets](#writing--reading-secrets)
   - [Response Wrapping](#response-wrapping)
+    - [System Backend](#system-backend)
+    - [Cubbyhole Backend](#cubbyhole-backend)
 - [Troubleshooting](#troubleshooting)
   - [Bad Image Caches](bad-image-caches)
 - [License](#license)
@@ -176,29 +178,86 @@ And it is in fact in Consul:
 
 ### Response Wrapping
 
-Running with a [Cubbyhole Secret Backend](https://www.vaultproject.io/docs/secrets/cubbyhole/index.html).
-
-> _NOTE: for this example to work you would need [jq](https://stedolan.github.io/jq/) (i.e. to parse JSON responses from Vault)._
+> _NOTE: for these examples to work you would need [jq](https://stedolan.github.io/jq/) (i.e. to parse JSON responses from Vault)._
 
 > _`brew install jq` or `apt-get install jq` or similar_
+
+#### System backend
+
+Running with a [System Secret Backend](https://www.vaultproject.io/api/system/index.html).
 
 Export Vault env vars for the local scripts to work:
 
 ```bash
 $ export VAULT_ADDR=http://127.0.0.1:8200
-$ export VAULT_TOKEN=5a4a7e11-1e2f-6f76-170e-b8ec58cd2da5
+$ export VAULT_TOKEN=5a4a7e11-1e2f-6f76-170e-b8ec58cd2da5  ### root token you remembered from initializing Vault
+```
+
+At the root of `cault` project there is `creds.json` file (you can create your own of course):
+
+```bash
+$ cat creds.json
+
+{"username": "ceo",
+ "password": "behind-super-secret-password"}
+```
+
+We can write it to a "one time place" in Vault. This one time place will be accessible by a "one time token" Vault will return from a
+`/sys/wrapping/wrap` endpoint:
+
+```bash
+$ token=`./tools/vault/wrap-token.sh creds.json`
+
+$ echo $token
+7c0c0c6a-47c5-58cf-1c7a-a86c7537d795
+```
+
+You can checkout [wrap-token.sh](tools/vault/wrap-token.sh) script, it uses `/sys/wrapping/wrap` Vault's endpoint
+to secretly persist `creds.json` and return a token for it that will be valid for 60 seconds.
+
+Now let's use this token to unwrap the secret:
+
+```bash
+$ ./tools/vault/unwrap-token.sh $token
+
+{"password": "behind-super-secret-password",
+ "username": "ceo" }
+```
+
+You can checkout [unwrap-token.sh](tools/vault/unwrap-token.sh) script, it uses `/sys/wrapping/unwrap` Vault's endpoint
+
+Let's try to use the same token again:
+
+```bash
+$ ./tools/vault/unwrap-token.sh $token
+["wrapping token is not valid or does not exist"]
+```
+
+i.e. Vault takes `one time` pretty seriously.
+
+#### Cubbyhole backend
+
+> _NOTE: Cubbyhole is a deprecated backend_
+
+Running with a [Cubbyhole Secret Backend](https://www.vaultproject.io/docs/secrets/cubbyhole/index.html).
+
+Export Vault env vars for the local scripts to work:
+
+```bash
+$ export VAULT_ADDR=http://127.0.0.1:8200
+$ export VAULT_TOKEN=5a4a7e11-1e2f-6f76-170e-b8ec58cd2da5  ### root token you remembered from initializing Vault
 ```
 
 Create a cubbyhole for the `billion-dollars` secret, and wrap it in a one time use token:
 
 ```bash
-$ token=`./tools/vault/wrap-token.sh /secret/billion-dollars`
+$ token=`./tools/vault/cubbyhole-wrap-token.sh /secret/billion-dollars`
 ```
 
 let's look at it:
 
 ```bash
-$ $token
+$ echo $token
 141ad3d2-2035-9d7b-c284-ce119f39fc5d
 ```
 
