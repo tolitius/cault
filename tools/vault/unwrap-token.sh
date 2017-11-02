@@ -15,4 +15,4 @@ echo $(curl -s \
             -X POST \
             --data "{\"token\": \"$token\"}" \
             $VAULT_ADDR/v1/sys/wrapping/unwrap \
-            | jq -r '.data, .errors')
+            | jq -r '[.data, .errors] | del(.[] | nulls) | .[0]')
