@@ -237,8 +237,6 @@ i.e. Vault takes `one time` pretty seriously.
 
 #### Cubbyhole backend
 
-> _NOTE: Cubbyhole is a deprecated backend_
-
 Running with a [Cubbyhole Secret Backend](https://www.vaultproject.io/docs/secrets/cubbyhole/index.html).
 
 Export Vault env vars for the local scripts to work:
