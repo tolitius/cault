@@ -54,7 +54,7 @@ Because Vault is not yet initialized, it is sealed, that's why Consul will show 
 ### Init Vault
 
 ```bash
-$ vault init
+$ vault operator init
 Unseal Key 1: d28dc3e20848c499749450b411bdc55416cefb0ff6ddefd01ec02088aa5c90aa01
 Unseal Key 2: ad2b7e9d02d0c1cb5b98fafbc2e3ea56bd4d4fa112a0c61882c1179d6c6585f302
 Unseal Key 3: c393269f177ba3d07b14dbf14e25a325205dfbf5c91769b8e55bf91aff693ce603
