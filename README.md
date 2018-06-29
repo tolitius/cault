@@ -111,7 +111,7 @@ the Vault is now unsealed:
 We can use the `Initial Root Token` from above to auth with the Vault:
 
 ```bash
-$ vault auth
+$ vault login
 Token (will be hidden):
 Successfully authenticated! You are now logged in.
 token: 5a4a7e11-1e2f-6f76-170e-b8ec58cd2da5
