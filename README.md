@@ -80,21 +80,21 @@ hence it needs to be unsealed 3 times with 3 different keys (out of the 5 above)
 ### Unsealing Vault
 
 ```bash
-$ vault unseal
+$ vault operator unseal
 Key (will be hidden):
 Sealed: true
 Key Shares: 5
 Key Threshold: 3
 Unseal Progress: 1
 
-$ vault unseal
+$ vault operator unseal
 Key (will be hidden):
 Sealed: true
 Key Shares: 5
 Key Threshold: 3
 Unseal Progress: 2
 
-$ vault unseal
+$ vault operator unseal
 Key (will be hidden):
 Sealed: false
 Key Shares: 5
