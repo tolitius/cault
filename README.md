@@ -154,7 +154,7 @@ From the host environment (i.e. outside of the docker image):
 alias vault='docker exec -it cault_vault_1 vault "$@"'
 ```
 
-This will allow to run `vault` commands without a need to logging in to the image.
+This will allow to run `vault` commands without a need to login to the image.
 
 > the reason commands will work is because you just `auth`'ed (logged into Vault) with a root token inside the image in the previous step.
 
