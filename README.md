@@ -171,10 +171,10 @@ $ docker logs cault_consul_1 -f
 In the other terminal run vault commands:
 
 ```bash
-$ vault write -address=http://127.0.0.1:8200 secret/billion-dollars value=behind-super-secret-password
+$ vault write -address=http://127.0.0.1:8200 cubbyhole/billion-dollars value=behind-super-secret-password
 ```
 ```
-Success! Data written to: secret/billion-dollars
+Success! Data written to: cubbyhole/billion-dollars
 ```
 
 Check the Consul log, you should see something like:
@@ -186,18 +186,23 @@ Check the Consul log, you should see something like:
 Let's read it back:
 
 ```bash
-$ vault read secret/billion-dollars
+$ vault read cubbyhole/billion-dollars
 ```
 ```
 Key             	Value
 ---             	-----
-refresh_interval	2592000
 value           	behind-super-secret-password
 ```
 
 And it is in fact in Consul:
 
 <p align="center"><img src="doc/img/vault-value-in-consul.png"></p>
+
+and in Vault:
+
+<p align="center"><img src="doc/img/secret-in-vault-ui.png"></p>
+
+(this is from Vault's own UI that is enabled in this image)
 
 ### Response Wrapping
 
@@ -213,7 +218,7 @@ Export Vault env vars for the local scripts to work:
 
 ```bash
 $ export VAULT_ADDR=http://127.0.0.1:8200
-$ export VAULT_TOKEN=5a4a7e11-1e2f-6f76-170e-b8ec58cd2da5  ### root token you remembered from initializing Vault
+$ export VAULT_TOKEN=s.1ee2zxWvX43sAwjlcDaSGGSC  ### root token you remembered from initializing Vault
 ```
 
 At the root of `cault` project there is `creds.json` file (you can create your own of course):
@@ -232,7 +237,7 @@ We can write it to a "one time place" in Vault. This one time place will be acce
 $ token=`./tools/vault/wrap-token.sh creds.json`
 
 $ echo $token
-7c0c0c6a-47c5-58cf-1c7a-a86c7537d795
+s.sMFwpg8DBYh0NXbXqjLJTNKN
 ```
 
 You can checkout [wrap-token.sh](tools/vault/wrap-token.sh) script, it uses `/sys/wrapping/wrap` Vault's endpoint
@@ -266,20 +271,20 @@ Export Vault env vars for the local scripts to work:
 
 ```bash
 $ export VAULT_ADDR=http://127.0.0.1:8200
-$ export VAULT_TOKEN=5a4a7e11-1e2f-6f76-170e-b8ec58cd2da5  ### root token you remembered from initializing Vault
+$ export VAULT_TOKEN=s.1ee2zxWvX43sAwjlcDaSGGSC  ### root token you remembered from initializing Vault
 ```
 
 Create a cubbyhole for the `billion-dollars` secret, and wrap it in a one time use token:
 
 ```bash
-$ token=`./tools/vault/cubbyhole-wrap-token.sh /secret/billion-dollars`
+$ token=`./tools/vault/cubbyhole-wrap-token.sh /cubbyhole/billion-dollars`
 ```
 
 let's look at it:
 
 ```bash
 $ echo $token
-141ad3d2-2035-9d7b-c284-ce119f39fc5d
+s.T3GT2dGb8bUuJtSEenxnZick
 ```
 
 looks like any other token, but it is in fact a _one time use_ token, only for this cobbyhole.
@@ -290,26 +295,23 @@ Let's use it:
 $ curl -s -H "X-Vault-Token: $token" -X GET $VAULT_ADDR/v1/cubbyhole/response
 ```
 ```json
-{"lease_id": "",
- "renewable": false,
- "lease_duration": 0,
- "data": {
-   "response": {
-     "lease_id": "",
-     "renewable": false,
-     "lease_duration": 2592000,
-     "data": {
-       "value": "behind-super-secret-password"
-     },
-     "wrap_info": null,
-     "warnings": null,
-     "auth": null
-   }
- },
- "wrap_info": null,
- "warnings": null,
- "auth": null}
+{
+  "request_id": "f0cf41a6-d971-69be-4eee-c7137376a755",
+  "lease_id": "",
+  "renewable": false,
+  "lease_duration": 0,
+  "data": {
+    "response": "{\"request_id\":\"083429a1-2956-39f0-a402-628b6e346ac0\",\"lease_id\":\"\",\"renewable\":false,\"lease_duration\":0,\"data\":{\"value\":\"behind-super-secret-password\"},\"wrap_info\":null,\"warnings\":null,\"auth\":null}"
+  },
+  "wrap_info": null,
+  "warnings": [
+    "Reading from 'cubbyhole/response' is deprecated. Please use sys/wrapping/unwrap to unwrap responses, as it provides additional security checks and other benefits."
+  ],
+  "auth": null
+}
 ```
+
+_(notice: that "cubbyhole/response" is deprecated, use the `system` backend instead. example is in the section above)_
 
 Let's try to use it again:
 
@@ -344,6 +346,6 @@ docker rm $(docker ps -a -q)
 
 ## License
 
-Copyright © 2018 tolitius
+Copyright © 2019 tolitius
 
 Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
